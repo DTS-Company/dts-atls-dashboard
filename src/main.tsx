@@ -1,16 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
+import "@app/styles/index.css";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/autoplay";
-import "./i18n/i18next.js";
-import App from "./App";
-import { ThemeProvider } from "./context/ThemeContext";
-import { AppWrapper } from "./components/common/PageMeta";
+import "@shared/i18n/i18next";
+import App from "@app/App";
+import { ThemeProvider } from "@shared/lib/theme/ThemeContext";
+import { AppWrapper } from "@shared/ui/PageMeta";
 import { Provider } from "react-redux";
-import { store } from "./store/store";
+import { store } from "@app/store";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement

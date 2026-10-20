@@ -5,20 +5,28 @@ import path from "path";
 
 export default defineConfig({
   plugins: [react(), svgr()],
-  server: { port: 8085 },
+  server: {
+    port: 8085,
+    proxy: {
+      "/api": {
+        target: "http://10.10.25.239:8086",
+        changeOrigin: true,
+        // Без Origin бэкенд не применяет CORS-проверку к запросам через прокси
+        configure: (proxy) => {
+          proxy.on("proxyReq", (proxyReq) => proxyReq.removeHeader("origin"));
+        },
+      },
+    },
+  },
   resolve: {
+    // Слои Feature-Sliced Design
     alias: {
-      "@components": path.resolve(__dirname, "src/components"),
-      "@context": path.resolve(__dirname, "src/context"),
-      "@hooks": path.resolve(__dirname, "src/hooks"),
-      "@layout": path.resolve(__dirname, "src/layout"),
+      "@app": path.resolve(__dirname, "src/app"),
       "@pages": path.resolve(__dirname, "src/pages"),
-      "@permissions": path.resolve(__dirname, "src/permissions"),
-      "@store": path.resolve(__dirname, "src/store"),
-      "@utils": path.resolve(__dirname, "src/utils"),
-      "@apiConfig": path.resolve(__dirname, "src/apiConfig.ts"),
-      "@baseApi": path.resolve(__dirname, "src/baseApi.ts"),
-      "@auth": path.resolve(__dirname, "src/auth.ts"),
+      "@widgets": path.resolve(__dirname, "src/widgets"),
+      "@features": path.resolve(__dirname, "src/features"),
+      "@entities": path.resolve(__dirname, "src/entities"),
+      "@shared": path.resolve(__dirname, "src/shared"),
     },
   },
   css: {
