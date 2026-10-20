@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap&subset=cyrillic,cyrillic-ext");
 
 @tailwind base;
 @tailwind components;
@@ -6,48 +6,72 @@
 
 @layer base {
   body {
-    @apply relative text-base font-normal z-1 bg-gray-50 font-outfit;
+    @apply relative text-base font-normal z-1 font-sans text-gray-600 antialiased dark:text-gray-300;
+    background:
+      radial-gradient(600px 400px at 85% -5%, rgba(124, 92, 255, 0.2), transparent 70%),
+      radial-gradient(500px 380px at 30% 0%, rgba(56, 189, 248, 0.16), transparent 70%),
+      radial-gradient(520px 420px at 100% 70%, rgba(244, 114, 182, 0.14), transparent 70%),
+      #f4f3fb;
+    background-attachment: fixed;
+  }
+  .dark body {
+    background:
+      radial-gradient(600px 400px at 85% -5%, rgba(124, 92, 255, 0.25), transparent 70%),
+      radial-gradient(500px 380px at 30% 0%, rgba(56, 189, 248, 0.12), transparent 70%),
+      radial-gradient(520px 420px at 100% 70%, rgba(244, 114, 182, 0.1), transparent 70%),
+      #0d0b1f;
+    background-attachment: fixed;
   }
 }
 
 @layer components {
+  /* Стекло: полупрозрачная поверхность с размытием */
+  .atls-glass {
+    @apply border border-white/90 bg-white/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1638]/70;
+  }
+  /* Основной градиент: кнопки, активный пункт меню, метки */
+  .atls-gradient {
+    background-image: linear-gradient(90deg, #6d5dfc, #9b6bff);
+  }
+
+  /* Пункты тёмного меню: активный — светящаяся градиентная плашка */
   .menu-item {
-    @apply relative flex items-center w-full gap-3 px-3 py-2 font-medium rounded-lg text-theme-sm;
+    @apply relative flex items-center w-full gap-3 px-3 py-2.5 font-medium rounded-xl text-[13.5px] transition-colors;
   }
   .menu-item-active {
-    @apply bg-brand-50 text-brand-500 text-start dark:bg-brand-500/[0.12] dark:text-brand-400;
+    @apply atls-gradient text-white text-start shadow-glow;
   }
   .menu-item-inactive {
-    @apply text-gray-700 hover:bg-gray-100 text-start group-hover:text-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-gray-300;
+    @apply text-[#c9c6f2] hover:bg-white/[0.07] hover:text-white text-start;
   }
   .menu-item-icon {
-    @apply text-gray-500 group-hover:text-gray-700 dark:text-gray-400;
+    @apply text-[#c9c6f2];
   }
   .menu-item-icon-active {
-    @apply text-brand-500 dark:text-brand-400;
+    @apply text-white;
   }
   .menu-item-icon-inactive {
-    @apply text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300;
+    @apply text-[#c9c6f2] group-hover:text-white;
   }
 
   .menu-item-arrow {
     @apply relative;
   }
   .menu-item-arrow-active {
-    @apply rotate-180 text-brand-500 dark:text-brand-400;
+    @apply rotate-180 text-white;
   }
   .menu-item-arrow-inactive {
-    @apply text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300;
+    @apply text-[#8a86c4] group-hover:text-white;
   }
 
   .menu-dropdown-item {
-    @apply relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-theme-sm font-medium;
+    @apply relative flex items-center gap-3 rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors;
   }
   .menu-dropdown-item-active {
-    @apply bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400;
+    @apply text-white bg-white/[0.12];
   }
   .menu-dropdown-item-inactive {
-    @apply text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5;
+    @apply text-[#a9a5dc] hover:text-white hover:bg-white/[0.07];
   }
 
   .menu-dropdown-badge {
@@ -561,26 +585,42 @@ span.flatpickr-weekday,
 }
 
 
+/* Полоса страниц под таблицей: светло-фиолетовый фон (оттенок основного цвета), линия сверху */
 .table-pagination {
-  color: #5d85a3 !important; 
+  color: #4b4870 !important;
+  background: #f5f4ff;
+  border-top: 1px solid #ebe9f6;
 }
 
 .table-pagination .MuiTablePagination-displayedRows,
 .table-pagination .MuiIconButton-root,
-.table-pagination .MuiTablePagination-selectLabel {
-  color: #5d85a3 !important;
-}
-
-.table-pagination .MuiIconButton-root {
-  color: #5d85a3 !important; 
+.table-pagination .MuiTablePagination-selectLabel,
+.table-pagination .MuiSelect-select,
+.table-pagination .MuiSelect-icon {
+  color: #4b4870 !important;
+  font-family: inherit !important;
 }
 
 .table-pagination .MuiIconButton-root.Mui-disabled {
-  color: #b7beca !important; 
+  color: #a8a4cc !important;
 }
 
-.table-pagination .MuiSelect-icon {
-  color: #5d85a3 !important;
+.dark .table-pagination {
+  background: #221e45;
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .table-pagination,
+.dark .table-pagination .MuiTablePagination-displayedRows,
+.dark .table-pagination .MuiIconButton-root,
+.dark .table-pagination .MuiTablePagination-selectLabel,
+.dark .table-pagination .MuiSelect-select,
+.dark .table-pagination .MuiSelect-icon {
+  color: #c3bfe8 !important;
+}
+
+.dark .table-pagination .MuiIconButton-root.Mui-disabled {
+  color: #6b6890 !important;
 }
 
 

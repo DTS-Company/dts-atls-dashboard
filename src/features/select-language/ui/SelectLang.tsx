@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
-import { useLocalization, Language } from "@hooks/useLocalization";
+import { useLocalization, Language } from "@shared/lib/useLocalization";
 
 export const SelectLang = () => {
   const { lng, changeLanguage, t } = useLocalization();
@@ -35,7 +35,7 @@ export const SelectLang = () => {
     <div ref={wrapperRef} className="relative w-[140px]">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between px-4 py-[10px] rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 dark:hover:bg-gray-800 text-gray-900 dark:text-gray-100 hover:shadow-md transition-all"
+        className="w-full h-[38px] flex items-center justify-between px-3 rounded-xl bg-brand-50 font-semibold text-brand-600 hover:bg-brand-100 transition-colors dark:bg-brand-500/15 dark:text-brand-300 dark:hover:bg-brand-500/25"
       >
         <span className="flex items-center gap-2">
           <img src={current?.flag} alt={current?.label} className="w-5 h-5" />

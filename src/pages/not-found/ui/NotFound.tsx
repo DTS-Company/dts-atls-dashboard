@@ -1,4 +1,4 @@
-import { useLocalization } from "@hooks/useLocalization";
+import { useLocalization } from "@shared/lib/useLocalization";
 import { AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 

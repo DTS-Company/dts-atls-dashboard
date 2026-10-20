@@ -1,9 +1,9 @@
 import { useState, useEffect, useSyncExternalStore } from "react";
 import { UserRound } from "lucide-react";
 import { toast } from "react-toastify";
-import { API_BASE_URL } from "@apiConfig";
-import { Dropdown } from "@components/ui/dropdown/Dropdown";
-import FileInput from "@components/form/input/FileInput";
+import { API_BASE_URL } from "@shared/api/apiConfig";
+import { Dropdown } from "@shared/ui/dropdown/Dropdown";
+import FileInput from "@shared/ui/form/FileInput";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -99,24 +99,24 @@ export default function UserDropdown() {
     <div className="relative">
       <button
         onClick={toggleDropdown}
-        className="flex items-center text-gray-700 dark:text-gray-400"
+        className="flex items-center gap-2 text-gray-700 dark:text-gray-200"
       >
         <span className="mr-[-10px] overflow-hidden rounded-full w-full h-full">
           {avatar ? (
             <img
               src={avatar}
               alt="User"
-              className="w-11 h-11 rounded-full object-cover"
+              className="w-9 h-9 rounded-full object-cover"
             />
           ) : (
-            <div className="flex items-center justify-center h-11 w-11 rounded-full bg-white border border-gray-200 dark:bg-gray-900 dark:hover:bg-gray-800 dark:border-gray-800">
-              <UserRound className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            <div className="flex items-center justify-center h-9 w-9 rounded-full bg-gradient-to-br from-[#38bdf8] to-[#818cf8] text-white">
+              <UserRound className="w-4 h-4" />
             </div>
           )}
         </span>
 
         <div className="flex flex-col mr-2 items-start text-left">
-          <span className="font-medium text-gray-900 dark:text-white text-sm">
+          <span className="font-semibold text-gray-700 text-[13px] dark:text-white">
             {user ? user.name : "Загрузка..."}
           </span>
           <div className="flex items-center gap-1 text-xs">

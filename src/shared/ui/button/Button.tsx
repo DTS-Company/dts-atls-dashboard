@@ -25,21 +25,23 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
   // Size Classes
   const sizeClasses = {
-    sm: "px-4 py-3 text-sm",
-    md: "px-5 py-3 text-sm",
+    sm: "h-9 px-3 text-[13px]",
+    md: "h-10 px-4 text-sm",
   };
+
+  // Градиент — фоновая картинка: если кнопке задан свой фон (например, красный «Удалить»), градиент не нужен
+  const hasCustomBg = /(^|\s)bg-/.test(className);
 
   // Variant Classes
   const variantClasses = {
-    primary:
-      "bg-brand-500 text-white shadow-theme-xs hover:bg-brand-600 disabled:bg-brand-300",
+    primary: `${hasCustomBg ? "" : "atls-gradient"} text-white shadow-theme-md hover:brightness-110 disabled:opacity-60`,
     outline:
-      "bg-white text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700 dark:hover:bg-white/[0.03] dark:hover:text-gray-300",
+      "bg-brand-50 text-brand-600 hover:bg-brand-100 dark:bg-brand-500/15 dark:text-brand-300 dark:hover:bg-brand-500/25",
   };
 
   return (
     <button
-      className={`inline-flex items-center justify-center gap-2 rounded-lg transition ${className} ${
+      className={`inline-flex items-center justify-center gap-2 rounded-xl font-bold transition ${className} ${
         sizeClasses[size]
       } ${variantClasses[variant]} ${
         disabled ? "cursor-not-allowed opacity-50" : ""

@@ -1,23 +1,14 @@
 import React, { useEffect, useCallback, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 
+import { ChevronRight, Ellipsis, FileText, Table2 } from "lucide-react";
+import { useSidebar } from "@shared/lib/sidebar/SidebarContext";
+import { useGetPermissionsQuery } from "@entities/permission";
+import { useLocalization } from "@shared/lib/useLocalization";
 import {
-  Box,
-  ChevronRight,
-  Ellipsis,
-  FolderGit,
-  HomeIcon,
-  Link2,
-  Loader2,
-  Notebook,
-  Truck,
-  Users,
-} from "lucide-react";
-import { useSidebar } from "@context/SidebarContext";
-import { useGetDocumentsForCheckingQuery } from "@pages/Company/page/TabsPage/DocumentCompany/api/api";
-import { useGetPermissionsQuery } from "@permissions/permissionsApi";
-import { useLocalization } from "@hooks/useLocalization";
-import { useGetTransportDocumentsQuery } from "@pages/Documents/Transport/api/api";
+  ATLS_GROUPS, getAtlsReferencePath, getGroupReferences } from "@entities/reference";
+import { WAYBILL_MENU, getWaybillListPath } from "@entities/waybill";
+import { ATLS_REPORTS, getAtlsReportPath } from "@entities/report";
 
 type NavItem = {
   name: string;
@@ -34,244 +25,33 @@ type NavItem = {
   }[];
 };
 
-const useDocumentCounts = () => {
-  const { data: companyDocs, isLoading: isLoadingCompany } =
-    useGetDocumentsForCheckingQuery({
-      userType: "COMPANY",
-      page: 0,
-      size: 1,
-    });
-
-  const { data: individualDocs, isLoading: isLoadingIndividual } =
-    useGetDocumentsForCheckingQuery({
-      userType: "INDIVIDUAL",
-      page: 0,
-      size: 1,
-    });
-
-  const { data: entrepreneurDocs, isLoading: isLoadingEntrepreneur } =
-    useGetDocumentsForCheckingQuery({
-      userType: "ENTREPRENEUR",
-      page: 0,
-      size: 1,
-    });
-
-  const { data: transportDocs, isLoading: isLoadingTransport } =
-    useGetTransportDocumentsQuery({
-      userType: "TRANSPORT",
-      page: 0,
-      size: 1,
-    });
-
-  const isLoading =
-    isLoadingCompany ||
-    isLoadingIndividual ||
-    isLoadingEntrepreneur ||
-    isLoadingTransport;
-
-  return {
-    COMPANY: companyDocs?.meta?.totalCount || 0,
-    INDIVIDUAL: individualDocs?.meta?.totalCount || 0,
-    ENTREPRENEUR: entrepreneurDocs?.meta?.totalCount || 0,
-    TRANSPORT: transportDocs?.meta?.totalCount || 0,
-    isLoading,
-  };
-};
-
 const AppSidebar = () => {
   const { t } = useLocalization();
+  // Порядок как в прототипе: путевые листы, справочники по разделам, отчёты
   const navItems: NavItem[] = [
     {
-      icon: <HomeIcon />,
-      name: t("sidebar.main"),
-      path: "/",
+      icon: <Table2 size={18} />,
+      name: t("atls.groups.waybills"),
+      subItems: WAYBILL_MENU.map((item) => ({
+        name: t(`atls.waybills.menu.${item.slug}`),
+        path: getWaybillListPath(item.slug),
+      })),
     },
+    ...ATLS_GROUPS.map(({ key, icon: Icon }) => ({
+      icon: <Icon size={18} />,
+      name: t(`atls.groups.${key}`),
+      subItems: getGroupReferences(key).map((reference) => ({
+        name: t(`atls.refs.${reference.slug}`),
+        path: getAtlsReferencePath(reference.slug),
+      })),
+    })),
     {
-      name: t("sidebar.subject.name"),
-      icon: <Users />,
-      subItems: [
-        {
-          name: t("userType.individual"),
-          path: "/registeredIndividuals/INDIVIDUAL",
-          pro: false,
-          hasAccess: {
-            name: "individual",
-            path: "/api/v1/individual/",
-            method: "GET",
-          },
-        },
-        {
-          name: t("userType.company"),
-          path: "/registeredCompanies/COMPANY",
-          pro: false,
-          hasAccess: {
-            name: "company",
-            path: "/api/v1/company/",
-            method: "GET",
-          },
-        },
-        {
-          name: t("userType.entrepreneur"),
-          path: "/registeredentrepreneurs/ENTREPRENEUR",
-          pro: false,
-          hasAccess: {
-            name: "entrepreneur",
-            path: "/api/v1/entrepreneur/",
-            method: "GET",
-          },
-        },
-      ],
-    },
-    {
-      name: t("sidebar.objects.name"),
-      icon: <Box />,
-      subItems: [
-        {
-          name: t("sidebar.objects.transport"),
-          path: "/transport/TRANSPORT",
-          pro: false,
-          hasAccess: {
-            name: "transport",
-            path: "/api/v1/transport/",
-            method: "GET",
-          },
-        },
-        // {
-        //   name: t("sidebar.objects.rail"),
-        //   path: "/under-development",
-        //   pro: false,
-        // },
-        // {
-        //   name: t("sidebar.objects.roads"),
-        //   path: "/under-development",
-        //   pro: false,
-        // },
-        // {
-        //   name: t("sidebar.objects.ptk"),
-        //   path: "/under-development",
-        //   pro: false,
-        // },
-        // {
-        //   name: t("sidebar.objects.roadService"),
-        //   path: "/under-development",
-        //   pro: false,
-        // },
-      ],
-    },
-    {
-      name: t("sidebar.its.name"),
-      icon: <Truck />,
-      path: "/",
-      subItems: [
-        // {
-        //   name: t("sidebar.its.licenses"),
-        //   path: [
-        //     "/licensing",
-        //     "/licensing/companyPermitApplicationTable",
-        //     "/licensing/entrepreneurPermitApplicationTable",
-        //   ],
-        //   pro: false,
-        // },
-        {
-          name: "Товарно-транспортная накладная",
-          path: "/certification",
-          pro: false,
-        },
-        {
-          name: t("sidebar.its.permits"),
-          path: [
-            "/permits",
-            "/permits/blanksstats",
-            "/permits/dozvolTable",
-            "/permits/dozvolTable/view",
-          ],
-          pro: false,
-        },
-        {
-          name: t("sidebar.its.specialPermits"),
-          path: "/special-permits",
-          pro: false,
-        },
-        {
-          name: t("sidebar.its.waybill"),
-          path: "/waybill",
-          pro: false,
-        },
-        {
-          name: t("sidebar.its.eTTN"),
-          path: "/e-ttn",
-          pro: false,
-        },
-        {
-          name: t("sidebar.its.eCMR"),
-          path: "/e-cmr",
-          pro: false,
-        },
-        {
-          name: t("sidebar.its.eTIR"),
-          path: "/e-tir",
-          pro: false,
-        },
-        {
-          name: t("sidebar.its.tachograph"),
-          path: "/tachograph",
-          pro: false,
-        },
-      ],
-    },
-  ];
-
-  const othersItems: NavItem[] = [
-    {
-      name: t("sidebar.others.reports"),
-      icon: <FolderGit />,
-      subItems: [
-        {
-          name: t("userType.individual"),
-          path: "/reports/INDIVIDUAL",
-          pro: false,
-        },
-        {
-          name: t("userType.company"),
-          path: "/reports/COMPANY",
-          pro: false,
-        },
-        {
-          name: t("userType.entrepreneur"),
-          path: "/reports/ENTREPRENEUR",
-          pro: false,
-        },
-        {
-          name: t("sidebar.others.reportsTraffic"),
-          path: "/reports/traffic-intensity",
-          pro: false,
-        },
-      ],
-    },
-    {
-      icon: <Notebook />,
-      name: t("sidebar.others.references"),
-      path: [
-        "/references",
-        "/references/cities",
-        "/references/company-types",
-        "/references/countries",
-        "/references/districts",
-        "/references/document-types",
-        "/references/user-statuses",
-        "/references/transport-types",
-        "/references/transport-brands",
-        "/references/transport-views",
-        "/references/transport-ownerships",
-        "/references/transport-owner-types",
-        "/references/transport-fuels",
-        "/references/licences",
-      ],
-    },
-    {
-      icon: <Link2 />,
-      name: t("sidebar.others.integrations"),
-      path: ["/integrations"],
+      icon: <FileText size={18} />,
+      name: t("atls.groups.reports"),
+      subItems: ATLS_REPORTS.map((report) => ({
+        name: t(`atls.reports.titles.${report.slug}`),
+        path: getAtlsReportPath(report.slug),
+      })),
     },
   ];
 
@@ -279,16 +59,6 @@ const AppSidebar = () => {
   const location = useLocation();
   const { data: permissions = [], isLoading: isLoadingPermissions } =
     useGetPermissionsQuery();
-  const {
-    COMPANY,
-    INDIVIDUAL,
-    ENTREPRENEUR,
-    TRANSPORT,
-    isLoading: isLoadingDocumentCounts,
-  } = useDocumentCounts();
-
-  const totalDocumentsCount = COMPANY + INDIVIDUAL + ENTREPRENEUR;
-
   const hasAccess = useCallback(
     (accessConfig: { name: string; path: string; method: string }) => {
       return permissions.some(
@@ -340,22 +110,16 @@ const AppSidebar = () => {
 
   useEffect(() => {
     let submenuMatched = false;
-    ["main", "others"].forEach((menuType) => {
-      const items = menuType === "main" ? navItems : othersItems;
-      items.forEach((nav, index) => {
-        const filteredSubItems = getFilteredSubItems(nav.subItems);
-        if (filteredSubItems && filteredSubItems.length > 0) {
-          filteredSubItems.forEach((subItem) => {
-            if (isActive(subItem.path)) {
-              setOpenSubmenu({
-                type: menuType as "main" | "others",
-                index,
-              });
-              submenuMatched = true;
-            }
-          });
-        }
-      });
+    navItems.forEach((nav, index) => {
+      const filteredSubItems = getFilteredSubItems(nav.subItems);
+      if (filteredSubItems && filteredSubItems.length > 0) {
+        filteredSubItems.forEach((subItem) => {
+          if (isActive(subItem.path)) {
+            setOpenSubmenu({ type: "main", index });
+            submenuMatched = true;
+          }
+        });
+      }
     });
 
     if (!submenuMatched) {
@@ -388,35 +152,6 @@ const AppSidebar = () => {
     });
   };
 
-  const DocumentCountBadge = ({ userType }: { userType: string }) => {
-    let count = 0;
-
-    switch (userType) {
-      case "COMPANY":
-        count = COMPANY;
-        break;
-      case "INDIVIDUAL":
-        count = INDIVIDUAL;
-        break;
-      case "ENTREPRENEUR":
-        count = ENTREPRENEUR;
-        break;
-      case "TRANSPORT":
-        count = TRANSPORT;
-        break;
-      default:
-        count = 0;
-    }
-
-    if (!count || count === 0) return null;
-
-    return (
-      <span className="ml-auto flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-blue-500 rounded-full min-w-[20px]">
-        {count > 99 ? "99+" : count}
-      </span>
-    );
-  };
-
   const LoadingSkeleton = ({ isExpanded }: { isExpanded: boolean }) => {
     const showExpanded = isExpanded || isHovered;
 
@@ -425,7 +160,7 @@ const AppSidebar = () => {
         <div className="flex flex-col gap-4">
           <div>
             <h2
-              className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
+              className={`mb-2 px-3 text-[10.5px] font-bold tracking-[0.12em] uppercase flex leading-[20px] text-[#8a86c4] ${
                 !isExpanded && !isHovered
                   ? "lg:justify-center"
                   : "justify-start"
@@ -578,7 +313,7 @@ const AppSidebar = () => {
 
   const renderMenuItems = (items: NavItem[], menuType: "main" | "others") => {
     return (
-      <ul className="flex flex-col gap-4">
+      <ul className="flex flex-col gap-1">
         {items.map((nav, index) => {
           const filteredSubItems = getFilteredSubItems(nav.subItems);
           const hasVisibleSubItems =
@@ -614,29 +349,18 @@ const AppSidebar = () => {
                     {(isExpanded || isHovered || isMobileOpen) && (
                       <span className="flex items-center gap-2 menu-item-text">
                         {nav.name}
-                        {(nav.name === "Документы на проверку" ||
-                          nav.name === "Ҳуҷҷатҳо барои тасдиқ") &&
-                          totalDocumentsCount > 0 && (
-                            <span className="w-3 h-3 bg-blue-500 rounded-full"></span>
-                          )}
                       </span>
                     )}
 
                     {(isExpanded || isHovered || isMobileOpen) && (
-                      <>
-                        <ChevronRight
-                          className={`ml-auto w-5 h-5 transition-transform duration-200 ${
-                            openSubmenu?.type === menuType &&
-                            openSubmenu?.index === index
-                              ? "rotate-90 text-brand-500"
-                              : ""
-                          }`}
-                        />
-                        {isLoadingDocumentCounts &&
-                          nav.name === t("sidebar.documents.name") && (
-                            <Loader2 className="w-4 h-4 ml-2 text-gray-400 animate-spin" />
-                          )}
-                      </>
+                      <ChevronRight
+                        className={`ml-auto w-5 h-5 transition-transform duration-200 ${
+                          openSubmenu?.type === menuType &&
+                          openSubmenu?.index === index
+                            ? "rotate-90 text-brand-500"
+                            : ""
+                        }`}
+                      />
                     )}
                   </button>
                 ) : (
@@ -704,7 +428,7 @@ const AppSidebar = () => {
                           : "0px",
                     }}
                   >
-                    <ul className="mt-2 space-y-1 ml-9">
+                    <ul className="mt-1 mb-2 ml-[21px] space-y-0.5 border-l border-white/10 pl-3">
                       {filteredSubItems.map((subItem) => (
                         <li key={subItem.name}>
                           <Link
@@ -721,16 +445,6 @@ const AppSidebar = () => {
                           >
                             {subItem.name}
                             <span className="flex items-center gap-1 ml-auto">
-                              {subItem.userType && (
-                                <>
-                                  <DocumentCountBadge
-                                    userType={subItem.userType}
-                                  />
-                                  {isLoadingDocumentCounts && (
-                                    <Loader2 className="w-3 h-3 text-gray-400 animate-spin" />
-                                  )}
-                                </>
-                              )}
                               {subItem.new && (
                                 <span
                                   className={`ml-auto ${
@@ -770,7 +484,7 @@ const AppSidebar = () => {
   return (
     <>
       <aside
-        className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen z-50 border-r border-gray-200 
+        className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-4 left-0 bg-gradient-to-b from-[#1e1b4b] to-[#2e1f6b] dark:from-[#120f2e] dark:to-[#1d1544] text-[#c9c6f2] h-screen z-50
           ${
             isExpanded || isMobileOpen
               ? "w-[290px]"
@@ -784,19 +498,21 @@ const AppSidebar = () => {
         onMouseLeave={() => setIsHovered(false)}
       >
         <div
-          className={`py-8 flex ${
+          className={`py-5 flex ${
             !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
           }`}
         >
-          <Link to="/">
-            {isExpanded || isHovered || isMobileOpen ? (
-              <>
-                <p className="text-center uppercase dark:text-gray-400">
-                  Центр цифровизации транспортного сектора
+          <Link to="/" className="flex items-center gap-3">
+            <img src="/main_logo.png" alt="Logo" width={34} height={34} />
+            {(isExpanded || isHovered || isMobileOpen) && (
+              <div>
+                <p className="text-[15px] font-bold tracking-[-0.01em] leading-tight text-white">
+                  {t("atls.brand.name")}
                 </p>
-              </>
-            ) : (
-              <img src="/main_logo.png" alt="Logo" width={42} height={42} />
+                <p className="text-[11px] leading-tight text-[#8a86c4]">
+                  {t("atls.brand.subtitle")}
+                </p>
+              </div>
             )}
           </Link>
         </div>
@@ -823,23 +539,6 @@ const AppSidebar = () => {
                     )}
                   </h2>
                   {renderMenuItems(navItems, "main")}
-                </div>
-
-                <div className="">
-                  <h2
-                    className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                      !isExpanded && !isHovered
-                        ? "lg:justify-center"
-                        : "justify-start"
-                    }`}
-                  >
-                    {isExpanded || isHovered || isMobileOpen ? (
-                      `${t("sidebar.additionally")}`
-                    ) : (
-                      <Ellipsis />
-                    )}
-                  </h2>
-                  {renderMenuItems(othersItems, "others")}
                 </div>
               </div>
             )}

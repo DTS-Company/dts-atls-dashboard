@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { Permission } from "./types";
-import { baseQueryWithReauth } from "@baseApi";
+import { Permission } from "../model/types";
+import { baseQueryWithReauth } from "@shared/api/baseApi";
 
 export const permissionsApi = createApi({
   reducerPath: "permissionsApi",

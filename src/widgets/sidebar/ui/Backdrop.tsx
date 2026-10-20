@@ -1,4 +1,4 @@
-import { useSidebar } from "@context/SidebarContext";
+import { useSidebar } from "@shared/lib/sidebar/SidebarContext";
 
 const Backdrop = () => {
   const { isMobileOpen, toggleMobileSidebar } = useSidebar();

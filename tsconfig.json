@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ES2020",
     "lib": [
       "dom",
       "dom.iterable",
@@ -14,7 +14,7 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
@@ -24,41 +24,13 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "jsx": "react-jsx",
-    "baseUrl": "./src",
     "paths": {
-      "@components/*": [
-        "components/*"
-      ],
-      "@context/*": [
-        "context/*"
-      ],
-      "@hooks/*": [
-        "hooks/*"
-      ],
-      "@layout/*": [
-        "layout/*"
-      ],
-      "@pages/*": [
-        "pages/*"
-      ],
-      "@permissions/*": [
-        "permissions/*"
-      ],
-      "@store/*": [
-        "store/*"
-      ],
-      "@utils/*": [
-        "utils/*"
-      ],
-      "@apiConfig": [
-        "apiConfig.ts"
-      ],
-      "@baseApi": [
-        "baseApi.ts"
-      ],
-      "@auth": [
-        "auth.ts"
-      ]
+      "@app/*": ["./src/app/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@widgets/*": ["./src/widgets/*"],
+      "@features/*": ["./src/features/*"],
+      "@entities/*": ["./src/entities/*"],
+      "@shared/*": ["./src/shared/*"]
     }
   },
   "include": [
